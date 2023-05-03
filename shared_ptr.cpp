@@ -6,6 +6,7 @@
 
 void AdvancedSharedPtr();                   // Forward reference
 void FileExample();                         // Forward reference
+void WeakPtrDemo();                         // Forward reference
 
 class Base {
 public:
@@ -66,6 +67,7 @@ int main()
     }
 
     AdvancedSharedPtr();
+    WeakPtrDemo();
 
     return 0;
 }
@@ -154,4 +156,35 @@ void readFile(const char *filename) {
 void FileExample()
 {
     readFile("main.cpp");
+}
+
+//-------------------------------------------------------------------------
+// Weak pointer demo
+//-------------------------------------------------------------------------
+
+void WeakPtrDemo() 
+{
+    // Create a shared_ptr and initialize it with a new object
+    std::shared_ptr<Base> sp1 = std::make_shared<Derived>();
+
+    // Create a weak_ptr from the shared_ptr
+    std::weak_ptr<Base> wp1(sp1);
+
+    // Check if the weak_ptr is valid and lock it to obtain a shared_ptr
+    if (auto locked = wp1.lock()) {
+        std::cout << "Weak pointer is valid. Locked and obtained shared_ptr." << std::endl;
+        locked->speak();
+    } else {
+        std::cout << "Weak pointer is not valid." << std::endl;
+    }
+
+    // Reset the shared_ptr, causing the object to be destroyed
+    sp1.reset();
+
+    // Check if the weak_ptr is still valid
+    if (wp1.expired()) {
+        std::cout << "Weak pointer is now expired." << std::endl;
+    } else {
+        std::cout << "Weak pointer is still valid." << std::endl;
+    }
 }
